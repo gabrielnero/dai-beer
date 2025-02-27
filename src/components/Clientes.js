@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Clientes.css';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function Clientes({ showNotification }) {
@@ -23,7 +23,7 @@ function Clientes({ showNotification }) {
       }
     };
     carregarClientes();
-  }, []);
+  }, [showNotification]);
 
   const clientesFiltrados = clientes.filter(cliente =>
     cliente.nome.toLowerCase().includes(pesquisa.toLowerCase()) ||

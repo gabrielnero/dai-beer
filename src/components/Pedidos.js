@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Pedidos.css';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function Pedidos({ showNotification }) {
   const [pedidos, setPedidos] = useState([]);
   const [pedidoEmEdicao, setPedidoEmEdicao] = useState(null);
-  const [modalAberto, setModalAberto] = useState(false);
 
   useEffect(() => {
     const carregarPedidos = async () => {
@@ -17,15 +16,13 @@ function Pedidos({ showNotification }) {
           id: doc.id,
           ...doc.data()
         }));
-        console.log('Pedidos carregados:', pedidosData);
         setPedidos(pedidosData);
       } catch (error) {
-        console.error('Erro ao carregar pedidos:', error);
         showNotification('Erro ao carregar pedidos', 'error');
       }
     };
     carregarPedidos();
-  }, []);
+  }, [showNotification]);
 
   const atualizarPedido = async (pedidoAtualizado) => {
     try {

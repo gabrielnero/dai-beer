@@ -22,12 +22,11 @@ function NovoPedido({ showNotification }) {
         }));
         setClientes(clientesData);
       } catch (error) {
-        console.error('Erro ao carregar clientes:', error);
         showNotification('Erro ao carregar clientes', 'error');
       }
     };
     carregarClientes();
-  }, []);
+  }, [showNotification]);
 
   const [pedido, setPedido] = useState({
     cliente: null,
