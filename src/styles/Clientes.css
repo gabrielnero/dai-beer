@@ -1,0 +1,123 @@
+.clientes-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.clientes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.botao-novo {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.botao-novo:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.pesquisa-container {
+  margin-bottom: 20px;
+}
+
+.campo-pesquisa {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.lista-clientes {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.lista-clientes table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lista-clientes th,
+.lista-clientes td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.lista-clientes th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.lista-clientes tr:hover {
+  background-color: #f5f5f5;
+}
+
+.botao-editar,
+.botao-excluir {
+  padding: 8px 16px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.botao-editar {
+  background-color: #2196F3;
+  color: white;
+}
+
+.botao-excluir {
+  background-color: #f44336;
+  color: white;
+}
+
+.botao-editar:hover,
+.botao-excluir:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Modo Escuro */
+.dark-mode .lista-clientes {
+  background-color: #2d2d2d;
+}
+
+.dark-mode .lista-clientes th {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark-mode .lista-clientes td {
+  border-color: #404040;
+}
+
+.dark-mode .lista-clientes tr:hover {
+  background-color: #3d3d3d;
+}
+
+.dark-mode .campo-pesquisa {
+  background-color: #3d3d3d;
+  color: #ffffff;
+  border-color: #4d4d4d;
+}
+
+.dark-mode .campo-pesquisa::placeholder {
+  color: #aaa;
+} 
