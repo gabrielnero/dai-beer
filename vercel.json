@@ -8,6 +8,10 @@
   ],
   "routes": [
     {
+      "src": "/pedidos",
+      "dest": "/pedidos.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "server.js"
     }

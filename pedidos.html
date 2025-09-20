@@ -628,7 +628,7 @@
     <!-- Header -->
     <header class="header" id="header">
         <nav class="nav container">
-            <a href="index.html" class="nav__brand">
+            <a href="/" class="nav__brand">
                 <img src="/assets/logo.png" alt="Dai Beer Cervejaria Artesanal" class="nav__logo">
                 <div class="nav__brand-text">
                     <span class="nav__title">Dai Beer</span>
@@ -639,19 +639,19 @@
             <div class="nav__menu" id="nav-menu">
                 <ul class="nav__list">
                     <li class="nav__item">
-                        <a href="index.html#home" class="nav__link">Início</a>
+                        <a href="/#home" class="nav__link">Início</a>
                     </li>
                     <li class="nav__item">
-                        <a href="index.html#sobre" class="nav__link">Sobre Nós</a>
+                        <a href="/#sobre" class="nav__link">Sobre Nós</a>
                     </li>
                     <li class="nav__item">
-                        <a href="index.html#produtos" class="nav__link">Produtos</a>
+                        <a href="/#produtos" class="nav__link">Produtos</a>
                     </li>
                     <li class="nav__item">
-                        <a href="pedidos.html" class="nav__link active-link">Fazer Pedido</a>
+                        <a href="pedidos" class="nav__link active-link">Fazer Pedido</a>
                     </li>
                     <li class="nav__item">
-                        <a href="index.html#contato" class="nav__link">Contato</a>
+                        <a href="/#contato" class="nav__link">Contato</a>
                     </li>
                 </ul>
                 <div class="nav__close" id="nav-close">
@@ -660,7 +660,7 @@
             </div>
             
             <div class="nav__actions">
-                <a href="pedidos.html" class="button button--small">
+                <a href="pedidos" class="button button--small">
                     <i class="fas fa-shopping-cart"></i>
                     Fazer Pedido
                 </a>
@@ -888,10 +888,10 @@
                     <div class="footer__section">
                         <h4>Navegação</h4>
                         <ul>
-                            <li><a href="index.html#home">Início</a></li>
-                            <li><a href="index.html#sobre">Sobre Nós</a></li>
-                            <li><a href="index.html#produtos">Produtos</a></li>
-                            <li><a href="pedidos.html">Loja Online</a></li>
+                            <li><a href="/#home">Início</a></li>
+                            <li><a href="/#sobre">Sobre Nós</a></li>
+                            <li><a href="/#produtos">Produtos</a></li>
+                            <li><a href="pedidos">Loja Online</a></li>
                         </ul>
                     </div>
                     
@@ -1026,7 +1026,7 @@
                     
                     produtoCard.innerHTML = `
                         <div class="produto-image">
-                            <img src="${produto.imagem || 'default-product.jpg'}" alt="${produto.nome}" style="width: 100%; height: ${imageHeight}; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+                            <img src="/assets/${produto.imagem || 'default-product.jpg'}" alt="${produto.nome}" style="width: 100%; height: ${imageHeight}; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
                         </div>
                         <div class="produto-header">
                             <div class="produto-nome">${produto.nome}</div>
