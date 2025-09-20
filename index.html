@@ -172,8 +172,8 @@
                         </div>
                         
                         <div class="sobre__images">
-                            <img src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/photo-1436076863939-06870fe779c2" alt="Cervejaria Dai Beer" class="sobre__img sobre__img--1">
-                            <img src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/photo-1571613316887-6f8d5cbf7ef7" alt="Processo Artesanal" class="sobre__img sobre__img--2">
+                            <img src="/assets/logo.png" alt="Cervejaria Dai Beer" class="sobre__img sobre__img--1">
+                            <img src="/assets/logo.png" alt="Processo Artesanal" class="sobre__img sobre__img--2">
                         </div>
                     </div>
                 </div>
@@ -348,7 +348,7 @@
                     </div>
                     
                     <div class="cta__image">
-                        <img src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/photo-1558618666-fcd25c85cd64" alt="Chopps Artesanais Dai Beer" class="cta__img">
+                        <img src="/assets/todos_chopps.jpg" alt="Chopps Artesanais Dai Beer" class="cta__img">
                     </div>
                 </div>
             </div>
@@ -407,7 +407,7 @@
                     </div>
                     
                     <div class="contato__map">
-                        <iframe src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/embed.html" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3475.123456789!2d-52.1234567!3d-28.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDA3JzI0LjQiUyA1MsKwMDcnMjQuNCJX!5e0!3m2!1spt-BR!2sbr!4v1234567890123!5m2!1spt-BR!2sbr" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
                     </div>
                 </div>
@@ -499,43 +499,60 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/main.js.download"></script>
+    <script>
+        // Navigation Toggle
+        const navMenu = document.getElementById('nav-menu');
+        const navToggle = document.getElementById('nav-toggle');
+        const navClose = document.getElementById('nav-close');
 
-<div id="give-freely-root-ejkiikneibegknkgimmihdpcbcedgmpo" class="give-freely-root" data-extension-id="ejkiikneibegknkgimmihdpcbcedgmpo" data-extension-name="Volume Booster" style="display: block;"><template shadowrootmode="open"><style>
-  :host {
-    all: initial;
-  }
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.add('show-menu');
+            });
+        }
 
-  .gf-scroll-remove::-webkit-scrollbar {
-    border-radius-bottom-right: 15px;
-  }
+        if (navClose) {
+            navClose.addEventListener('click', () => {
+                navMenu.classList.remove('show-menu');
+            });
+        }
 
-  button {
-    cursor: pointer;
-    transition: transform 0.1s ease;
-  }
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav__link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('show-menu');
+            });
+        });
 
-  button:active {
-    transform: scale(0.98);
-  }
+        // Scroll header
+        function scrollHeader() {
+            const header = document.getElementById('header');
+            if (this.scrollY >= 50) {
+                header.classList.add('scroll-header');
+            } else {
+                header.classList.remove('scroll-header');
+            }
+        }
+        window.addEventListener('scroll', scrollHeader);
 
-  .give-freely-close-button:hover {
-    opacity: 0.7;
-  }
+        // Active link
+        const sections = document.querySelectorAll('section[id]');
+        function scrollActive() {
+            const scrollY = window.pageYOffset;
+            sections.forEach(current => {
+                const sectionHeight = current.offsetHeight;
+                const sectionTop = current.offsetTop - 50;
+                const sectionId = current.getAttribute('id');
+                const sectionsClass = document.querySelector('.nav__menu a[href*=' + sectionId + ']');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    sectionsClass.classList.add('active-link');
+                } else {
+                    sectionsClass.classList.remove('active-link');
+                }
+            });
+        }
+        window.addEventListener('scroll', scrollActive);
+    </script>
 
-  input[type="radio"] {
-    margin-right: 8px;
-  }
-
-  hr {
-    border: none;
-    border-top: 1px solid #e5e5e5;
-    margin: 1em 0;
-  }
-
-  @media (max-width: 600px), (max-height: 480px) {
-    #give-freely-checkout-popup {
-      display: none !important;
-    }
-  }
-</style><div><div class="gf-app"></div></div></template></div></body></html>
+</body></html>
