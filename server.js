@@ -18,8 +18,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos
-app.use(express.static('.'));
+// Servir arquivos estáticos da pasta public
+app.use(express.static('public'));
 
 // Criar servidor HTTP para Socket.IO
 const server = http.createServer(app);

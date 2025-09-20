@@ -24,6 +24,14 @@
       "dest": "server.js"
     },
     {
+      "src": "/style.css",
+      "dest": "/public/style.css"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/public/assets/$1"
+    },
+    {
       "src": "/",
       "dest": "server.js"
     }
