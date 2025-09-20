@@ -17,6 +17,10 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Servir arquivos estáticos com MIME types corretos
+app.use('/style.css', express.static('style.css'));
+app.use('/assets', express.static('assets'));
 app.use(express.static('.'));
 
 // Criar servidor HTTP para Socket.IO
