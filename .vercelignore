@@ -1,0 +1,8 @@
+node_modules
+android
+*.apk
+*.log
+.env
+.env.local
+.env.production
+.env.development

@@ -1,0 +1,597 @@
+// ===== CONFIGURATION =====
+const API_BASE_URL = 'https://daibeer-ouxoobj83-gabriels-projects-8af767f1.vercel.app/api';
+
+// ===== DOM ELEMENTS =====
+const navMenu = document.getElementById('nav-menu');
+const navToggle = document.getElementById('nav-toggle');
+const navClose = document.getElementById('nav-close');
+const navLinks = document.querySelectorAll('.nav__link');
+const sections = document.querySelectorAll('section[id]');
+const header = document.getElementById('header');
+const pedidoForm = document.getElementById('pedido-form');
+const produtosContainer = document.getElementById('produtos-container');
+const adicionarProdutoBtn = document.getElementById('adicionar-produto');
+const resumoPedido = document.getElementById('pedido-resumo');
+const resumoContent = document.getElementById('resumo-content');
+const totalPedido = document.getElementById('total-pedido');
+const loadingOverlay = document.getElementById('loading-overlay');
+const successModal = document.getElementById('success-modal');
+const numeroPedido = document.getElementById('numero-pedido');
+
+// ===== NAVIGATION MENU =====
+if (navToggle) {
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.add('show-menu');
+    });
+}
+
+if (navClose) {
+    navClose.addEventListener('click', () => {
+        navMenu.classList.remove('show-menu');
+    });
+}
+
+// Close menu when clicking on nav link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        navMenu.classList.remove('show-menu');
+    });
+});
+
+// ===== SCROLL SECTIONS ACTIVE LINK =====
+function scrollActive() {
+    const scrollY = window.pageYOffset;
+
+    sections.forEach(current => {
+        const sectionHeight = current.offsetHeight;
+        const sectionTop = current.offsetTop - 50;
+        const sectionId = current.getAttribute('id');
+        const navLink = document.querySelector(`.nav__link[href*="${sectionId}"]`);
+
+        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+            navLink?.classList.add('active-link');
+        } else {
+            navLink?.classList.remove('active-link');
+        }
+    });
+}
+
+window.addEventListener('scroll', scrollActive);
+
+// ===== CHANGE BACKGROUND HEADER =====
+function scrollHeader() {
+    if (this.scrollY >= 80) {
+        header.classList.add('scroll-header');
+    } else {
+        header.classList.remove('scroll-header');
+    }
+}
+
+window.addEventListener('scroll', scrollHeader);
+
+// ===== SMOOTH SCROLLING =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// ===== SCROLL REVEAL ANIMATION =====
+function revealOnScroll() {
+    const reveals = document.querySelectorAll('.reveal');
+    
+    reveals.forEach(element => {
+        const windowHeight = window.innerHeight;
+        const elementTop = element.getBoundingClientRect().top;
+        const elementVisible = 150;
+        
+        if (elementTop < windowHeight - elementVisible) {
+            element.classList.add('active');
+        }
+    });
+}
+
+window.addEventListener('scroll', revealOnScroll);
+
+// ===== PRODUTOS DISPONÍVEIS =====
+const produtosDisponiveis = {
+    chopps: {
+        'Chopp Pilsen': { preco: 12.00, capacidade: '500ml' },
+        'Chopp American IPA': { preco: 15.00, capacidade: '500ml' },
+        'Chopp American Pale Ale': { preco: 15.00, capacidade: '500ml' },
+        'Chopp de Uva': { preco: 15.00, capacidade: '500ml' }
+    },
+    barril: {
+        'Barril Chopp Pilsen 20L': { preco: 240.00, capacidade: '20L' },
+        'Barril Chopp Pilsen 30L': { preco: 360.00, capacidade: '30L' },
+        'Barril Chopp Pilsen 50L': { preco: 600.00, capacidade: '50L' }
+    },
+    energetico: {
+        'Energético Tradicional': { preco: 4.99, capacidade: '350ml' }
+    }
+};
+
+// ===== PRODUTO COUNTER =====
+let produtoCounter = 0;
+
+// ===== ADICIONAR PRODUTO =====
+function adicionarProduto() {
+    produtoCounter++;
+    
+    const produtoHTML = `
+        <div class="produto-item" data-produto="${produtoCounter}">
+            <div class="produto-item__header">
+                <h4 class="produto-item__title">Produto ${produtoCounter}</h4>
+                <button type="button" class="produto-item__remove" onclick="removerProduto(${produtoCounter})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="form__grid">
+                <div class="form__group">
+                    <label class="form__label">Tipo *</label>
+                    <select name="produtos[${produtoCounter}][tipo]" class="form__input produto-tipo" onchange="atualizarProdutos(${produtoCounter})" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="chopps">Chopps</option>
+                        <option value="barril">Barris</option>
+                        <option value="energetico">Energéticos</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label class="form__label">Produto *</label>
+                    <select name="produtos[${produtoCounter}][produto]" class="form__input produto-select" onchange="atualizarPreco(${produtoCounter})" required disabled>
+                        <option value="">Primeiro selecione o tipo</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label class="form__label">Quantidade *</label>
+                    <input type="number" name="produtos[${produtoCounter}][quantidade]" class="form__input produto-quantidade" min="1" value="1" onchange="calcularTotal()" required>
+                </div>
+                <div class="form__group">
+                    <label class="form__label">Preço Unitário</label>
+                    <input type="text" class="form__input produto-preco" readonly>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    produtosContainer.insertAdjacentHTML('beforeend', produtoHTML);
+    calcularTotal();
+}
+
+// ===== REMOVER PRODUTO =====
+function removerProduto(id) {
+    const produto = document.querySelector(`[data-produto="${id}"]`);
+    if (produto) {
+        produto.remove();
+        calcularTotal();
+    }
+}
+
+// ===== ATUALIZAR PRODUTOS POR TIPO =====
+function atualizarProdutos(id) {
+    const tipoSelect = document.querySelector(`[data-produto="${id}"] .produto-tipo`);
+    const produtoSelect = document.querySelector(`[data-produto="${id}"] .produto-select`);
+    const precoInput = document.querySelector(`[data-produto="${id}"] .produto-preco`);
+    
+    const tipo = tipoSelect.value;
+    
+    // Limpar select de produtos
+    produtoSelect.innerHTML = '<option value="">Selecione o produto</option>';
+    precoInput.value = '';
+    
+    if (tipo && produtosDisponiveis[tipo]) {
+        produtoSelect.disabled = false;
+        
+        // Adicionar produtos do tipo selecionado
+        Object.keys(produtosDisponiveis[tipo]).forEach(produto => {
+            const option = document.createElement('option');
+            option.value = produto;
+            option.textContent = `${produto} - ${produtosDisponiveis[tipo][produto].capacidade}`;
+            produtoSelect.appendChild(option);
+        });
+    } else {
+        produtoSelect.disabled = true;
+    }
+    
+    calcularTotal();
+}
+
+// ===== ATUALIZAR PREÇO =====
+function atualizarPreco(id) {
+    const tipoSelect = document.querySelector(`[data-produto="${id}"] .produto-tipo`);
+    const produtoSelect = document.querySelector(`[data-produto="${id}"] .produto-select`);
+    const precoInput = document.querySelector(`[data-produto="${id}"] .produto-preco`);
+    
+    const tipo = tipoSelect.value;
+    const produto = produtoSelect.value;
+    
+    if (tipo && produto && produtosDisponiveis[tipo] && produtosDisponiveis[tipo][produto]) {
+        const preco = produtosDisponiveis[tipo][produto].preco;
+        precoInput.value = `R$ ${preco.toFixed(2).replace('.', ',')}`;
+    } else {
+        precoInput.value = '';
+    }
+    
+    calcularTotal();
+}
+
+// ===== CALCULAR TOTAL =====
+function calcularTotal() {
+    let total = 0;
+    const produtos = document.querySelectorAll('.produto-item');
+    
+    produtos.forEach(produto => {
+        const tipoSelect = produto.querySelector('.produto-tipo');
+        const produtoSelect = produto.querySelector('.produto-select');
+        const quantidadeInput = produto.querySelector('.produto-quantidade');
+        
+        const tipo = tipoSelect.value;
+        const produtoNome = produtoSelect.value;
+        const quantidade = parseInt(quantidadeInput.value) || 0;
+        
+        if (tipo && produtoNome && quantidade > 0 && produtosDisponiveis[tipo] && produtosDisponiveis[tipo][produtoNome]) {
+            const preco = produtosDisponiveis[tipo][produtoNome].preco;
+            total += preco * quantidade;
+        }
+    });
+    
+    totalPedido.textContent = total.toFixed(2).replace('.', ',');
+    
+    // Mostrar/ocultar resumo
+    if (total > 0) {
+        atualizarResumo();
+        resumoPedido.style.display = 'block';
+    } else {
+        resumoPedido.style.display = 'none';
+    }
+}
+
+// ===== ATUALIZAR RESUMO =====
+function atualizarResumo() {
+    const produtos = document.querySelectorAll('.produto-item');
+    let resumoHTML = '';
+    
+    produtos.forEach(produto => {
+        const tipoSelect = produto.querySelector('.produto-tipo');
+        const produtoSelect = produto.querySelector('.produto-select');
+        const quantidadeInput = produto.querySelector('.produto-quantidade');
+        
+        const tipo = tipoSelect.value;
+        const produtoNome = produtoSelect.value;
+        const quantidade = parseInt(quantidadeInput.value) || 0;
+        
+        if (tipo && produtoNome && quantidade > 0 && produtosDisponiveis[tipo] && produtosDisponiveis[tipo][produtoNome]) {
+            const preco = produtosDisponiveis[tipo][produtoNome].preco;
+            const subtotal = preco * quantidade;
+            
+            resumoHTML += `
+                <div class="resumo__item">
+                    <span>${quantidade}x ${produtoNome}</span>
+                    <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `;
+        }
+    });
+    
+    resumoContent.innerHTML = resumoHTML;
+}
+
+// ===== FORMATAÇÃO DE INPUTS =====
+// Telefone
+document.addEventListener('input', function(e) {
+    if (e.target.name === 'telefone') {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
+        e.target.value = value;
+    }
+});
+
+// CEP
+document.addEventListener('input', function(e) {
+    if (e.target.name === 'cep') {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+        e.target.value = value;
+    }
+});
+
+// ===== BUSCAR CEP =====
+document.addEventListener('blur', function(e) {
+    if (e.target.name === 'cep') {
+        const cep = e.target.value.replace(/\D/g, '');
+        
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.querySelector('[name="bairro"]').value = data.bairro || '';
+                        document.querySelector('[name="rua"]').value = data.logradouro || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar CEP:', error);
+                });
+        }
+    }
+}, true);
+
+// ===== DEFINIR DATA MÍNIMA =====
+function definirDataMinima() {
+    const hoje = new Date();
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
+    
+    const dataEntrega = document.getElementById('data-entrega');
+    if (dataEntrega) {
+        dataEntrega.min = amanha.toISOString().split('T')[0];
+    }
+}
+
+// ===== FORM SUBMISSION =====
+if (pedidoForm) {
+    pedidoForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validar se há pelo menos um produto
+        const produtos = document.querySelectorAll('.produto-item');
+        if (produtos.length === 0) {
+            alert('Adicione pelo menos um produto ao seu pedido.');
+            return;
+        }
+        
+        // Validar pedido mínimo de R$ 50
+        const total = parseFloat(totalPedido.textContent.replace(',', '.')) || 0;
+        if (total < 50) {
+            alert('Pedido mínimo de R$ 50,00. Adicione mais produtos ao seu carrinho.');
+            return;
+        }
+        
+        // Validar produtos
+        let produtosValidos = 0;
+        produtos.forEach(item => {
+            const tipo = item.querySelector('.produto-tipo').value;
+            const produto = item.querySelector('.produto-select').value;
+            const quantidade = parseInt(item.querySelector('.produto-quantidade').value);
+            
+            if (tipo && produto && quantidade > 0) {
+                produtosValidos++;
+            }
+        });
+        
+        if (produtosValidos === 0) {
+            alert('Configure pelo menos um produto corretamente.');
+            return;
+        }
+        
+        // Coletar dados do formulário
+        const formData = new FormData(pedidoForm);
+        const dadosPedido = {
+            cliente: {
+                nome: formData.get('nome'),
+                telefone: formData.get('telefone'),
+                email: formData.get('email') || null
+            },
+            endereco: {
+                cep: formData.get('cep'),
+                rua: formData.get('rua'),
+                numero: formData.get('numero'),
+                bairro: formData.get('bairro'),
+                complemento: formData.get('complemento') || null,
+                cidade: 'Marau',
+                estado: 'RS'
+            },
+            produtos: [],
+            entrega: {
+                data: formData.get('dataEntrega'),
+                horario: formData.get('horarioEntrega')
+            },
+            pagamento: formData.get('pagamento'),
+            observacoes: formData.get('observacoes') || null,
+            total: total,
+            status: 'pendente'
+        };
+        
+        // Coletar produtos
+        produtos.forEach(item => {
+            const tipo = item.querySelector('.produto-tipo').value;
+            const produtoNome = item.querySelector('.produto-select').value;
+            const quantidade = parseInt(item.querySelector('.produto-quantidade').value);
+            
+            if (tipo && produtoNome && quantidade > 0 && produtosDisponiveis[tipo] && produtosDisponiveis[tipo][produtoNome]) {
+                const produtoInfo = produtosDisponiveis[tipo][produtoNome];
+                dadosPedido.produtos.push({
+                    tipo: tipo,
+                    nome: produtoNome,
+                    preco: produtoInfo.preco,
+                    quantidade: quantidade,
+                    capacidade: produtoInfo.capacidade,
+                    subtotal: produtoInfo.preco * quantidade
+                });
+            }
+        });
+        
+        // Mostrar loading
+        loadingOverlay.style.display = 'flex';
+        
+        try {
+            // Enviar pedido para API
+            const response = await fetch(`${API_BASE_URL}/pedidos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dadosPedido)
+            });
+            
+            const resultado = await response.json();
+            
+            if (response.ok) {
+                // Sucesso
+                numeroPedido.textContent = resultado.pedido._id.slice(-8).toUpperCase();
+                successModal.style.display = 'flex';
+                
+                // Limpar formulário
+                pedidoForm.reset();
+                produtosContainer.innerHTML = '';
+                resumoPedido.style.display = 'none';
+                produtoCounter = 0;
+                
+                // Adicionar primeiro produto automaticamente
+                setTimeout(() => {
+                    adicionarProduto();
+                }, 1000);
+                
+            } else {
+                throw new Error(resultado.message || 'Erro ao enviar pedido');
+            }
+            
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao enviar pedido. Tente novamente ou entre em contato pelo WhatsApp.');
+        } finally {
+            loadingOverlay.style.display = 'none';
+        }
+    });
+}
+
+// ===== FECHAR MODAL =====
+function closeModal() {
+    successModal.style.display = 'none';
+}
+
+// Fechar modal clicando fora
+if (successModal) {
+    successModal.addEventListener('click', function(e) {
+        if (e.target === successModal) {
+            closeModal();
+        }
+    });
+}
+
+// ===== EVENT LISTENERS =====
+if (adicionarProdutoBtn) {
+    adicionarProdutoBtn.addEventListener('click', adicionarProduto);
+}
+
+// ===== INICIALIZAÇÃO =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Definir data mínima para entrega
+    definirDataMinima();
+    
+    // Adicionar primeiro produto automaticamente
+    if (produtosContainer) {
+        adicionarProduto();
+    }
+    
+    // Verificar status da API
+    verificarStatusAPI();
+    
+    // Inicializar scroll reveal
+    setTimeout(revealOnScroll, 100);
+});
+
+// ===== VERIFICAR STATUS DA API =====
+async function verificarStatusAPI() {
+    const statusElement = document.getElementById('api-status');
+    if (!statusElement) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/health`);
+        if (response.ok) {
+            statusElement.textContent = '🟢 Online';
+            statusElement.style.color = 'var(--success-color)';
+        } else {
+            throw new Error('API indisponível');
+        }
+    } catch (error) {
+        statusElement.textContent = '🔴 Offline';
+        statusElement.style.color = 'var(--error-color)';
+        console.warn('API offline:', error);
+    }
+}
+
+// ===== INTERSECTION OBSERVER PARA ANIMAÇÕES =====
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+        }
+    });
+}, observerOptions);
+
+// Observar elementos com classe reveal
+document.addEventListener('DOMContentLoaded', () => {
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach(el => observer.observe(el));
+});
+
+// ===== PERFORMANCE OPTIMIZATIONS =====
+// Lazy loading para imagens
+if ('loading' in HTMLImageElement.prototype) {
+    const images = document.querySelectorAll('img[data-src]');
+    images.forEach(img => {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+    });
+} else {
+    // Fallback para browsers antigos
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+    document.body.appendChild(script);
+}
+
+// ===== PWA FUNCTIONALITY =====
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('SW registrado com sucesso:', registration);
+            })
+            .catch(registrationError => {
+                console.log('Falha no registro SW:', registrationError);
+            });
+    });
+}
+
+// ===== ANALYTICS =====
+// Google Analytics ou outras ferramentas de analytics podem ser adicionadas aqui
+
+// ===== UTILS =====
+function formatCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(value);
+}
+
+function formatDate(date) {
+    return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
+}
+
+function formatPhone(phone) {
+    return phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+}
+
+// ===== EXPORT PARA TESTES =====
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        formatCurrency,
+        formatDate,
+        formatPhone,
+        produtosDisponiveis
+    };
+}

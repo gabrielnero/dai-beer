@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://daibeercervejaria:MnjLxGolI3Q6eTEA@cluster0.ndziwas.mongodb.net/daibeer?retryWrites=true&w=majority&appName=Cluster0",
+    "JWT_SECRET": "daibeer_secret_key_2024"
+  }
+}

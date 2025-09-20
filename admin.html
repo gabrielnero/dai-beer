@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Dai Beer</title>
+    <meta name="description" content="Painel administrativo - Dai Beer Cervejaria Artesanal">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/logo.png">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/style.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7931e;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-color: #495057;
+            --text-light: #6c757d;
+            --background-color: #ffffff;
+            --background-light: #f8f9fa;
+            --border-radius: 8px;
+            --border-radius-large: 16px;
+            --shadow-light: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-medium: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-large: 0 8px 16px rgba(0,0,0,0.2);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-light);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Header - Mantendo padrão do index.html */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow-medium);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav__brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav__logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .nav__brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav__title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav__subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .nav__actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .button--primary {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .button--primary:hover {
+            background: var(--background-light);
+            transform: translateY(-2px);
+        }
+
+        .button--outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .button--outline:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Header */
+        .section__header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section__badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .section__title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .section__subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-large);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.8rem;
+            color: white;
+            position: relative;
+        }
+
+        .stat-icon.pending { background: var(--warning-color); }
+        .stat-icon.approved { background: var(--success-color); }
+        .stat-icon.delivered { background: var(--info-color); }
+        .stat-icon.revenue { background: var(--primary-color); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Admin Sections */
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .admin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .admin-card__header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-card__icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .admin-card__title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .admin-card__content {
+            padding: 1.5rem;
+        }
+
+        .admin-card__description {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-card__actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Orders Section */
+        .orders-section {
+            background: white;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .orders-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .orders-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background: white;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Orders Table */
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .orders-table th {
+            background: var(--background-light);
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .orders-table tr:hover {
+            background: var(--background-light);
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-approved {
+            background: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-delivered {
+            background: rgba(23, 162, 184, 0.2);
+            color: var(--info-color);
+        }
+
+        .status-cancelled {
+            background: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-large);
+            border-left: 4px solid var(--primary-color);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .notification-message {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .orders-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .orders-table {
+                font-size: 0.9rem;
+            }
+
+            .orders-table th,
+            .orders-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="nav__brand">
+                <img src="./Dai Beer - Cervejaria Artesanal _ Marau - RS_files/logo.png" alt="Dai Beer Logo" class="nav__logo">
+                <div class="nav__brand-text">
+                    <span class="nav__title">Dai Beer</span>
+                    <span class="nav__subtitle">Painel Administrativo</span>
+                </div>
+            </a>
+            
+            <div class="nav__actions">
+                <span id="admin-user" style="color: white; font-weight: 500;"></span>
+                <button class="button button--outline" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sair
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Section Header -->
+        <div class="section__header">
+            <span class="section__badge">Painel de Controle</span>
+            <h2 class="section__title">Dashboard Administrativo</h2>
+            <p class="section__subtitle">Gerencie pedidos, produtos e relatórios da Dai Beer</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="pending-count">0</div>
+                <div class="stat-label">Pedidos Pendentes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="stat-value" id="approved-count">0</div>
+                <div class="stat-label">Pedidos Aprovados</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon delivered">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-value" id="delivered-count">0</div>
+                <div class="stat-label">Pedidos Entregues</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon revenue">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-value" id="revenue-total">R$ 0,00</div>
+                <div class="stat-label">Faturamento Hoje</div>
+            </div>
+        </div>
+
+        <!-- Admin Functions -->
+        <div class="admin-sections">
+            <div class="admin-card">
+                <div class="admin-card__header">
+                    <div class="admin-card__icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="admin-card__title">Gestão de Produtos</div>
+                </div>
+                <div class="admin-card__content">
+                    <p class="admin-card__description">
+                        Gerencie o catálogo de produtos, preços e disponibilidade.
+                    </p>
+                    <div class="admin-card__actions">
+                        <button class="btn btn-primary" onclick="showProducts()">
+                            <i class="fas fa-list"></i>
+                            Ver Produtos
+                        </button>
+                        <button class="btn btn-success" onclick="addProduct()">
+                            <i class="fas fa-plus"></i>
+                            Adicionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="admin-card__header">
+                    <div class="admin-card__icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="admin-card__title">Relatórios</div>
+                </div>
+                <div class="admin-card__content">
+                    <p class="admin-card__description">
+                        Visualize relatórios de vendas, produtos mais vendidos e estatísticas.
+                    </p>
+                    <div class="admin-card__actions">
+                        <button class="btn btn-info" onclick="showReports()">
+                            <i class="fas fa-chart-line"></i>
+                            Ver Relatórios
+                        </button>
+                        <button class="btn btn-warning" onclick="exportData()">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="admin-card__header">
+                    <div class="admin-card__icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="admin-card__title">Configurações</div>
+                </div>
+                <div class="admin-card__content">
+                    <p class="admin-card__description">
+                        Configure o sistema, usuários e preferências da aplicação.
+                    </p>
+                    <div class="admin-card__actions">
+                        <button class="btn btn-primary" onclick="showSettings()">
+                            <i class="fas fa-sliders-h"></i>
+                            Configurar
+                        </button>
+                        <button class="btn btn-warning" onclick="clearOldOrders()">
+                            <i class="fas fa-trash"></i>
+                            Limpar Dados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-section">
+            <div class="orders-header">
+                <h3 class="orders-title">Pedidos Recentes</h3>
+                <div class="filter-controls">
+                    <select id="status-filter" class="filter-select" onchange="filterOrders()">
+                        <option value="">Todos os Status</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="aprovado">Aprovados</option>
+                        <option value="entregue">Entregues</option>
+                        <option value="cancelado">Cancelados</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="refreshOrders()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="loading" id="orders-loading">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="orders-content" style="display: none;">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Cliente</th>
+                            <th>Telefone</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table">
+                        <!-- Orders will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let socket;
+        let allOrders = [];
+        let filteredOrders = [];
+        let authToken;
+
+        // Initialize the admin panel
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            initializeSocket();
+            loadDashboard();
+            loadOrders();
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            authToken = localStorage.getItem('admin_token');
+            const username = localStorage.getItem('admin_user');
+            
+            if (!authToken) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Verify token is still valid
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    localStorage.removeItem('admin_token');
+                    localStorage.removeItem('admin_user');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                if (username) {
+                    document.getElementById('admin-user').textContent = `Olá, ${username}`;
+                }
+            } catch (error) {
+                console.error('Erro ao verificar token:', error);
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                window.location.href = '/login';
+            }
+        }
+
+        // Initialize Socket.IO connection
+        function initializeSocket() {
+            socket = io('http://localhost:3000');
+            
+            socket.on('connect', () => {
+                console.log('Conectado ao servidor');
+                socket.emit('join-socios');
+            });
+
+            socket.on('novo-pedido', (notificacao) => {
+                showNotification('Novo Pedido!', `Pedido ${notificacao.numero_pedido} recebido de ${notificacao.cliente_nome}`);
+                loadDashboard();
+                loadOrders();
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Desconectado do servidor');
+            });
+        }
+
+        // Show notification
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-title">${title}</span>
+                </div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/mobile/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('pending-count').textContent = data.pedidos_pendentes || 0;
+                document.getElementById('approved-count').textContent = data.pedidos_aprovados || 0;
+                document.getElementById('delivered-count').textContent = data.pedidos_entregues || 0;
+                document.getElementById('revenue-total').textContent = `R$ ${(data.vendas_hoje || 0).toFixed(2)}`;
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+                showNotification('Erro!', 'Erro ao carregar dados do dashboard');
+            }
+        }
+
+        // Load all orders
+        async function loadOrders() {
+            try {
+                document.getElementById('orders-loading').style.display = 'flex';
+                document.getElementById('orders-content').style.display = 'none';
+                
+                const response = await fetch('/api/mobile/pedidos', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                allOrders = data.pedidos || [];
+                filteredOrders = [...allOrders];
+                
+                renderOrdersTable();
+                
+                document.getElementById('orders-loading').style.display = 'none';
+                document.getElementById('orders-content').style.display = 'block';
+            } catch (error) {
+                console.error('Erro ao carregar pedidos:', error);
+                document.getElementById('orders-loading').style.display = 'none';
+                showNotification('Erro!', 'Erro ao carregar pedidos');
+            }
+        }
+
+        // Filter orders
+        function filterOrders() {
+            const statusFilter = document.getElementById('status-filter').value;
+            
+            if (statusFilter) {
+                filteredOrders = allOrders.filter(pedido => pedido.status === statusFilter);
+            } else {
+                filteredOrders = [...allOrders];
+            }
+            
+            renderOrdersTable();
+        }
+
+        // Render orders table
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table');
+            tbody.innerHTML = '';
+            
+            filteredOrders.forEach(pedido => {
+                const row = createOrderRow(pedido);
+                tbody.appendChild(row);
+            });
+        }
+
+        // Create order row
+        function createOrderRow(pedido) {
+            const row = document.createElement('tr');
+            
+            const statusClass = `status-${pedido.status}`;
+            const statusText = {
+                'pendente': 'Pendente',
+                'aprovado': 'Aprovado',
+                'entregue': 'Entregue',
+                'cancelado': 'Cancelado'
+            }[pedido.status] || pedido.status;
+            
+            const dataFormatada = new Date(pedido.created_at).toLocaleDateString('pt-BR');
+            
+            row.innerHTML = `
+                <td><strong>${pedido.numero_pedido}</strong></td>
+                <td>${pedido.cliente_nome}</td>
+                <td>${pedido.cliente_telefone}</td>
+                <td><strong>R$ ${pedido.total.toFixed(2)}</strong></td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>${dataFormatada}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-info" onclick="viewOrderDetails('${pedido._id}')" title="Ver Detalhes">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${pedido.status === 'pendente' ? `
+                            <button class="btn btn-success" onclick="approveOrder('${pedido._id}')" title="Aprovar">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger" onclick="cancelOrder('${pedido._id}')" title="Cancelar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : pedido.status === 'aprovado' ? `
+                            <button class="btn btn-info" onclick="markDelivered('${pedido._id}')" title="Marcar como Entregue">
+                                <i class="fas fa-truck"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            `;
+            
+            return row;
+        }
+
+        // Order actions
+        async function approveOrder(orderId) {
+            try {
+                const response = await fetch(`/api/mobile/pedidos/${orderId}/aprovar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('Sucesso!', 'Pedido aprovado com sucesso');
+                    loadDashboard();
+                    loadOrders();
+                } else {
+                    showNotification('Erro!', 'Erro ao aprovar pedido');
+                }
+            } catch (error) {
+                console.error('Erro ao aprovar pedido:', error);
+                showNotification('Erro!', 'Erro ao aprovar pedido');
+            }
+        }
+
+        async function cancelOrder(orderId) {
+            if (!confirm('Tem certeza que deseja cancelar este pedido?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/mobile/pedidos/${orderId}/negar`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('Sucesso!', 'Pedido cancelado com sucesso');
+                    loadDashboard();
+                    loadOrders();
+                } else {
+                    showNotification('Erro!', 'Erro ao cancelar pedido');
+                }
+            } catch (error) {
+                console.error('Erro ao cancelar pedido:', error);
+                showNotification('Erro!', 'Erro ao cancelar pedido');
+            }
+        }
+
+        async function markDelivered(orderId) {
+            try {
+                const response = await fetch(`/api/mobile/pedidos/${orderId}/entregue`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('Sucesso!', 'Pedido marcado como entregue');
+                    loadDashboard();
+                    loadOrders();
+                } else {
+                    showNotification('Erro!', 'Erro ao marcar como entregue');
+                }
+            } catch (error) {
+                console.error('Erro ao marcar como entregue:', error);
+                showNotification('Erro!', 'Erro ao marcar como entregue');
+            }
+        }
+
+        // Admin functions
+        function showProducts() {
+            showNotification('Em Desenvolvimento', 'Funcionalidade de gestão de produtos será implementada em breve');
+        }
+
+        function addProduct() {
+            showNotification('Em Desenvolvimento', 'Funcionalidade de adicionar produtos será implementada em breve');
+        }
+
+        function showReports() {
+            showNotification('Em Desenvolvimento', 'Funcionalidade de relatórios será implementada em breve');
+        }
+
+        function exportData() {
+            showNotification('Em Desenvolvimento', 'Funcionalidade de exportação será implementada em breve');
+        }
+
+        function showSettings() {
+            showNotification('Em Desenvolvimento', 'Funcionalidade de configurações será implementada em breve');
+        }
+
+        function clearOldOrders() {
+            if (confirm('Tem certeza que deseja limpar pedidos antigos? Esta ação não pode ser desfeita.')) {
+                showNotification('Em Desenvolvimento', 'Funcionalidade de limpeza será implementada em breve');
+            }
+        }
+
+        function viewOrderDetails(orderId) {
+            const pedido = allOrders.find(p => p._id === orderId);
+            if (!pedido) return;
+            
+            const details = `
+Pedido: ${pedido.numero_pedido}
+Cliente: ${pedido.cliente_nome}
+Telefone: ${pedido.cliente_telefone}
+Endereço: ${pedido.cliente_endereco}
+Total: R$ ${pedido.total.toFixed(2)}
+Status: ${pedido.status}
+Data: ${new Date(pedido.created_at).toLocaleString('pt-BR')}
+            `;
+            
+            alert(details);
+        }
+
+        // Refresh orders
+        function refreshOrders() {
+            loadDashboard();
+            loadOrders();
+            showNotification('Atualizado!', 'Dados atualizados com sucesso');
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

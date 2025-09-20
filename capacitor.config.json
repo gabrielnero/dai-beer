@@ -1,0 +1,22 @@
+{
+  "appId": "com.daibeer.admin",
+  "appName": "Dai Beer Admin",
+  "webDir": "daibeer-admin/www",
+  "cordova": {
+    "preferences": {
+      "DisallowOverscroll": "true",
+      "android-minSdkVersion": "22",
+      "BackupWebStorage": "none",
+      "SplashMaintainAspectRatio": "true",
+      "FadeSplashScreenDuration": "300",
+      "SplashShowOnlyFirstTime": "false",
+      "SplashScreen": "screen",
+      "SplashScreenDelay": "3000",
+      "AutoHideSplashScreen": "true",
+      "ShowSplashScreenSpinner": "false",
+      "StatusBarOverlaysWebView": "false",
+      "StatusBarBackgroundColor": "#ff6b35",
+      "StatusBarStyle": "lightcontent"
+    }
+  }
+}

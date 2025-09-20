@@ -1,0 +1,56 @@
+🔐 CREDENCIAIS DE ACESSO - PAINEL ADMINISTRATIVO
+
+🔑 PÁGINA DE LOGIN: http://localhost:3000/login
+📱 PAINEL ADMINISTRATIVO: http://localhost:3000/admin
+
+👤 USUÁRIOS DISPONÍVEIS:
+   • admin / daibeer2024 (Administrador Principal)
+   • socio1 / socio123 (Sócio 1)
+   • socio2 / socio456 (Sócio 2)
+
+⚠️ IMPORTANTE:
+- Estas credenciais são para acesso ao painel administrativo
+- Mantenha-as seguras e não compartilhe
+- Em produção, use credenciais mais seguras
+- Considere implementar autenticação mais robusta
+
+🎯 FUNCIONALIDADES DO PAINEL:
+✅ Página de login segura com JWT
+✅ Dashboard com estatísticas em tempo real
+✅ Visualização completa de todos os pedidos
+✅ Aprovação/rejeição de pedidos
+✅ Marcação de pedidos como entregues
+✅ Detalhes completos de cada pedido
+✅ Filtros por status
+✅ Notificações em tempo real
+✅ Interface responsiva para mobile
+✅ Design mantendo padrões do site principal
+✅ Logo Dai Beer no header
+✅ Múltiplos usuários administrativos
+✅ Autenticação por sessão
+
+📊 DADOS EXIBIDOS:
+- Nome completo do cliente
+- Telefone/WhatsApp
+- Endereço completo
+- Tipo de entrega
+- Data da entrega (se agendada)
+- Forma de pagamento
+- Total do pedido
+- Lista completa de itens
+- Status do pedido
+- Data e hora do pedido
+
+🔒 SEGURANÇA:
+- Autenticação JWT com tokens seguros
+- Página de login dedicada
+- APIs protegidas com middleware
+- Acesso restrito apenas para administradores
+- Sessões com expiração automática (24h)
+- Múltiplos usuários administrativos
+- Logout seguro
+
+---
+
+Dai Beer Cervejaria Artesanal 🍺
+Sistema Administrativo Completo
