@@ -18,18 +18,27 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos da raiz com MIME types corretos
-app.use(express.static('.', {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.css')) {
-            res.setHeader('Content-Type', 'text/css');
-        } else if (path.endsWith('.png')) {
-            res.setHeader('Content-Type', 'image/png');
-        } else if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
-            res.setHeader('Content-Type', 'image/jpeg');
-        }
+// Servir arquivos estáticos com rotas específicas
+app.get('/style.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css');
+    res.sendFile(__dirname + '/style.css');
+});
+
+app.get('/assets/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = __dirname + '/assets/' + filename;
+    
+    if (filename.endsWith('.png')) {
+        res.setHeader('Content-Type', 'image/png');
+    } else if (filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
+        res.setHeader('Content-Type', 'image/jpeg');
     }
-}));
+    
+    res.sendFile(filePath);
+});
+
+// Servir outros arquivos estáticos
+app.use(express.static('.'));
 
 // Criar servidor HTTP para Socket.IO
 const server = http.createServer(app);
