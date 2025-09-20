@@ -18,7 +18,8 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Arquivos estáticos são servidos diretamente pela Vercel
+// Servir arquivos estáticos
+app.use(express.static('.'));
 
 // Criar servidor HTTP para Socket.IO
 const server = http.createServer(app);
