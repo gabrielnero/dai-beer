@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/pedidos",
-      "dest": "/pedidos.html"
+      "dest": "server.js"
     },
     {
       "src": "/(.*)",
