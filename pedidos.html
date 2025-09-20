@@ -821,8 +821,8 @@
                         </div>
                         
                         <div class="form-group" id="delivery-date-group" style="display: none;">
-                            <label class="form-label" for="data-entrega">Data da Entrega *</label>
-                            <input type="date" id="data-entrega" name="data-entrega" class="form-input" min="">
+                            <label class="form-label" for="data-entrega">Data e Hora da Entrega *</label>
+                            <input type="datetime-local" id="data-entrega" name="data-entrega" class="form-input" min="">
                         </div>
                         
                         <div class="form-group full-width">
@@ -1179,13 +1179,14 @@
 
         // Configurar data mínima para entrega
         function setupDeliveryDate() {
-            const today = new Date();
-            const tomorrow = new Date(today);
+            const now = new Date();
+            const tomorrow = new Date(now);
             tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(8, 0, 0, 0); // 8:00 AM
             
             const dateInput = document.getElementById('data-entrega');
             if (dateInput) {
-                dateInput.min = tomorrow.toISOString().split('T')[0];
+                dateInput.min = tomorrow.toISOString().slice(0, 16);
             }
         }
 

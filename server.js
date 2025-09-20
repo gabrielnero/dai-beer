@@ -310,7 +310,12 @@ app.post('/api/pedidos', async (req, res) => {
             numero_pedido: numeroPedido,
             cliente_nome: cliente.nome,
             total: total,
-            timestamp: new Date()
+            timestamp: new Date(),
+            tipo_entrega: tipo_entrega,
+            data_entrega: data_entrega,
+            telefone: cliente.telefone,
+            endereco: cliente.endereco,
+            status: 'pendente'
         };
         
         io.to('socios').emit('novo-pedido', notificacao);

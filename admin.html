@@ -419,6 +419,30 @@
             font-weight: 500;
             text-transform: uppercase;
         }
+        
+        .status-pendente {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .status-aprovado {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        
+        .status-cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
+        .status-entregue {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #6366f1;
+        }
 
         .status-pending {
             background: rgba(255, 193, 7, 0.2);
@@ -715,6 +739,7 @@
                             <th>Total</th>
                             <th>Status</th>
                             <th>Data</th>
+                            <th>Entrega</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -913,6 +938,10 @@
             
             const dataFormatada = new Date(pedido.created_at).toLocaleDateString('pt-BR');
             
+            const entregaInfo = pedido.tipo_entrega === 'entrega-agendada' && pedido.data_entrega 
+                ? new Date(pedido.data_entrega).toLocaleString('pt-BR')
+                : pedido.tipo_entrega || 'Entrega na hora';
+            
             row.innerHTML = `
                 <td><strong>${pedido.numero_pedido}</strong></td>
                 <td>${pedido.cliente_nome}</td>
@@ -920,6 +949,7 @@
                 <td><strong>R$ ${pedido.total.toFixed(2)}</strong></td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>${dataFormatada}</td>
+                <td>${entregaInfo}</td>
                 <td>
                     <div class="action-buttons">
                         <button class="btn btn-info" onclick="viewOrderDetails('${pedido._id}')" title="Ver Detalhes">
